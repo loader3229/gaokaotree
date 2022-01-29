@@ -34,12 +34,20 @@ layers.eng.effectDescription="";
 layers.eng.baseResource="学分";
 layers.eng.resetDescription="获得";
 
+layers.is.symbol="理综";
+layers.is.resource="理综能力";
+layers.is.effectDescription="";
+layers.is.baseResource="学分";
+layers.is.resetDescription="获得";
+
 layers.gk.symbol="高考";
 layers.gk.resource="分数";
 layers.gk.effectDescription="";
 layers.gk.baseResource="学分";
 layers.gk.resetDescription="获得";
 
+layers.a.symbol="成就";
+layers.u.symbol="技巧";
 
 layers.gk.milestones[0].requirementDescription="得到1分";
 layers.gk.milestones[0].effectDescription="学习语文可以获得学分。";
@@ -54,8 +62,17 @@ layers.gk.milestones[4].effectDescription="解锁英语。学习英语可以获�
 layers.gk.milestones[5].requirementDescription="得到9分";
 layers.gk.milestones[5].effectDescription="每秒自动学习1次数学。";
 layers.gk.milestones[6].requirementDescription="得到10分";
-layers.gk.milestones[6].effectDescription="当前残局";
-//layers.gk.milestones[6].effectDescription="解锁成就和教材。";
+layers.gk.milestones[6].effectDescription="解锁成就和教材。";
+layers.gk.milestones[7].requirementDescription="得到12分";
+layers.gk.milestones[7].effectDescription="每秒自动学习1次英语。";
+layers.gk.milestones[8].requirementDescription="得到15分";
+layers.gk.milestones[8].effectDescription=function(){return "根据你的分数，自动学习的效果变得更好。当前："+format(player.gk.points.pow(2).div(100).add(1))+"x"};
+layers.gk.milestones[9].requirementDescription="得到25分";
+layers.gk.milestones[9].effectDescription="解锁理综。学习理综可以获得学分。每秒自动学习1次理综。";
+layers.gk.milestones[10].requirementDescription="得到40分";
+layers.gk.milestones[10].effectDescription="解锁考试技巧。进行高考不会重置考试技巧。";
+layers.gk.milestones[11].requirementDescription="得到50分";
+layers.gk.milestones[11].effectDescription="当前残局";
 
 /*
 
@@ -75,6 +92,7 @@ var cnItems = {
     'credits': '学分',
     ' credits': '学分',
     'Milestone Gotten!': '获得里程碑！',
+    'Achievement Gotten!': '获得成就！',
 	
     'Start': '开始',
     'Exit Early': '提前退出',

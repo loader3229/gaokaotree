@@ -12,7 +12,7 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "1",
+	num: "2",
 	name: "",
 }
 
@@ -36,14 +36,28 @@ function canGenPoints(){
 
 function getPointGen() {
 	let ret=new Decimal(0)
-	if(player.gk.points.gte(5))ret=ret.add(layers.chi.getResetGainStable().log10().sqrt().div(20).add(0.1).mul(getPointMul()));
-	if(player.gk.points.gte(9))ret=ret.add(layers.mat.getResetGainStable().log10().sqrt().div(20).add(0.2).mul(getPointMul()));
+	if(player.gk.points.gte(5))ret=ret.add(layers.chi.getResetGainStable().log10().sqrt().div(20).add(0.1).mul(getPointMul()).mul(getAutoSpeed()));
+	if(player.gk.points.gte(9))ret=ret.add(layers.mat.getResetGainStable().log10().sqrt().div(20).add(0.2).mul(getPointMul()).mul(getAutoSpeed()));
+	if(player.gk.points.gte(12))ret=ret.add(layers.eng.getResetGainStable().log10().sqrt().div(20).add(0.3).mul(getPointMul()).mul(getAutoSpeed()));
+	if(player.gk.points.gte(25))ret=ret.add(layers.is.getResetGainStable().log10().sqrt().div(20).add(0.4).mul(getPointMul()).mul(getAutoSpeed()));
 	return ret;
 }
 
 function getPointMul() {
 	let ret=new Decimal(1)
 	if(player.gk.points.gte(2))ret = ret.mul(player.gk.points);
+	ret=ret.mul(buyableEffect("chi",11));
+	ret=ret.mul(buyableEffect("mat",11));
+	ret=ret.mul(buyableEffect("eng",11));
+	ret=ret.mul(buyableEffect("is",11));
+	if(hasUpgrade("chi",13))ret=ret.mul(upgradeEffect("chi",13));
+	if(hasUpgrade("mat",13))ret=ret.mul(upgradeEffect("mat",13));
+	return ret;
+}
+
+function getAutoSpeed() {
+	let ret=new Decimal(1)
+	if(player.gk.points.gte(15))ret = ret.mul(player.gk.points.pow(2).div(100).add(1));
 	return ret;
 }
 
@@ -63,7 +77,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.gk.points.gte(10);
+	return player.gk.points.gte(50);
 }
 
 
