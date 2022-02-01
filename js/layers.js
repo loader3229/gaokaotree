@@ -172,7 +172,7 @@
 		player.eng.buyables={11: new Decimal(0),12: new Decimal(0),21: new Decimal(0)};
 		player.is.points=new Decimal(0);
 		player.is.upgrades=[];
-		player.is.buyables={11: new Decimal(0),12: new Decimal(0)};
+		player.is.buyables={11: new Decimal(0),12: new Decimal(0),21: new Decimal(0)};
 		player.points=new Decimal(0);
 	},
 })
