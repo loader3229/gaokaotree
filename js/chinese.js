@@ -72,7 +72,17 @@ layers.gk.milestones[9].effectDescription="解锁理综。学习理综可以获�
 layers.gk.milestones[10].requirementDescription="得到40分";
 layers.gk.milestones[10].effectDescription="解锁考试技巧。进行高考不会重置考试技巧。";
 layers.gk.milestones[11].requirementDescription="得到50分";
-layers.gk.milestones[11].effectDescription="当前残局";
+layers.gk.milestones[11].effectDescription="解锁新教材。";
+layers.gk.milestones[12].requirementDescription="得到70分";
+layers.gk.milestones[12].effectDescription="解锁新考试技巧。";
+layers.gk.milestones[13].requirementDescription="得到80分";
+layers.gk.milestones[13].effectDescription=function(){return "根据你的分数，教材效果变得更好。当前：^"+format(player.gk.points.add(10).log10().pow(3).div(80).add(1),4)};
+layers.gk.milestones[14].requirementDescription="得到100分";
+layers.gk.milestones[14].effectDescription="解锁新教材。";
+layers.gk.milestones[15].requirementDescription="得到125分";
+layers.gk.milestones[15].effectDescription="提升基础学分获得。解锁新考试技巧。";
+layers.gk.milestones[16].requirementDescription="得到160分";
+layers.gk.milestones[16].effectDescription="当前残局";
 
 /*
 
