@@ -140,13 +140,27 @@
 			requirementDescription: "Get 125 points",
             unlocked() {return player[this.layer].best.gte(100)},
             done() {return player[this.layer].best.gte(125)}, // Used to determine when to give the milestone
-            effectDescription: "Get more base credits from studying. Unlock a permanent upgrade."
+            effectDescription: "Get more base credit from studying. Unlock a permanent upgrade."
         },
 		{
-			requirement: new Decimal(160),
-			requirementDescription: "Get 160 points",
+			requirement: new Decimal(150),
+			requirementDescription: "Get 150 points",
             unlocked() {return player[this.layer].best.gte(125)},
-            done() {return player[this.layer].best.gte(160)}, // Used to determine when to give the milestone
+            done() {return player[this.layer].best.gte(150)}, // Used to determine when to give the milestone
+            effectDescription: "Unlock more textbooks."
+        },
+		{
+			requirement: new Decimal(200),
+			requirementDescription: "Get 200 points",
+            unlocked() {return player[this.layer].best.gte(150)},
+            done() {return player[this.layer].best.gte(200)}, // Used to determine when to give the milestone
+            effectDescription: "Get more base credit from studying. Unlock a permanent upgrade."
+        },
+		{
+			requirement: new Decimal(255),
+			requirementDescription: "Get 255 points",
+            unlocked() {return player[this.layer].best.gte(200)},
+            done() {return player[this.layer].best.gte(255)}, // Used to determine when to give the milestone
             effectDescription: "Current Endgame"
         },
 		],
@@ -163,16 +177,16 @@
 	onPrestige(gain){
 		player.chi.points=new Decimal(0);
 		player.chi.upgrades=[];
-		player.chi.buyables={11: new Decimal(0),12: new Decimal(0),21: new Decimal(0)};
+		player.chi.buyables={11: new Decimal(0),12: new Decimal(0),21: new Decimal(0),22: new Decimal(0)};
 		player.mat.points=new Decimal(0);
 		player.mat.upgrades=[];
-		player.mat.buyables={11: new Decimal(0),12: new Decimal(0),21: new Decimal(0)};
+		player.mat.buyables={11: new Decimal(0),12: new Decimal(0),21: new Decimal(0),22: new Decimal(0)};
 		player.eng.points=new Decimal(0);
 		player.eng.upgrades=[];
-		player.eng.buyables={11: new Decimal(0),12: new Decimal(0),21: new Decimal(0)};
+		player.eng.buyables={11: new Decimal(0),12: new Decimal(0),21: new Decimal(0),22: new Decimal(0)};
 		player.is.points=new Decimal(0);
 		player.is.upgrades=[];
-		player.is.buyables={11: new Decimal(0),12: new Decimal(0),21: new Decimal(0)};
+		player.is.buyables={11: new Decimal(0),12: new Decimal(0),21: new Decimal(0),22: new Decimal(0)};
 		player.points=new Decimal(0);
 	},
 })
@@ -210,6 +224,7 @@ addLayer("chi", {
 		gain=gain.mul(buyableEffect("chi",11));
 		gain=gain.mul(buyableEffect("chi",12));
 		gain=gain.mul(buyableEffect("chi",21));
+		gain=gain.mul(buyableEffect("chi",22));
 		return gain;
 	},
 	getNextAt(){return new Decimal(0);},
@@ -383,6 +398,36 @@ addLayer("chi", {
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style: {'height':'222px'},
             },
+            22: {
+				title(){
+					return window.chinesemode?"语文必修四":"Chinese Textbook 3";
+				},
+                cost(x=player[this.layer].buyables[this.id]) { // cost for buying xth buyable, can be an object if there are multiple currencies
+                    let cost = Decimal.pow(20, x.pow(1.5)).mul(1e42)
+                    return cost
+                },
+                effect() {
+					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
+					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
+                    return ret;
+                },
+                display() { // Everything else displayed in the buyable button after the title
+                    let data = tmp[this.layer].buyables[this.id]
+                    return (window.chinesemode?"等级：":"Level: ")+format(player[this.layer].buyables[this.id])+
+                    (window.chinesemode?"<br>提升语文学习力和获得的学分。当前：":"<br>Increase Chinese studying speed and credits gain. Currently: ")+format(data.effect)+"x"+
+                    (window.chinesemode?"<br>花费：":"<br>Cost: ")+format(data.cost)+(window.chinesemode?"学分":" Credits");
+                },
+                unlocked() { return player.gk.points.gte(150) }, 
+                canAfford() {
+                    return player.points.gte(tmp[this.layer].buyables[this.id].cost)},
+                buy() { 
+                    cost = tmp[this.layer].buyables[this.id].cost
+                    player.points = player.points.sub(cost)	
+                    player[this.layer].buyables[this.id] = player[this.layer].buyables[this.id].add(1)
+                },
+                buyMax() {}, // You'll have to handle this yourself if you want
+                style: {'height':'222px'},
+            },
 	},
 	canReset(){return true},
 	update(diff){
@@ -424,6 +469,7 @@ addLayer("mat", {
 		gain=gain.mul(buyableEffect("mat",11));
 		gain=gain.mul(buyableEffect("mat",12));
 		gain=gain.mul(buyableEffect("mat",21));
+		gain=gain.mul(buyableEffect("mat",22));
 		return gain;
 	},
 	getNextAt(){return new Decimal(0);},
@@ -433,6 +479,7 @@ addLayer("mat", {
 		let ret=player.mat.points.add(5).log10();
 		if(hasUpgrade("u",12))ret=ret.mul(1.1).add(1);
 		if(hasUpgrade("u",13))ret=ret.mul(1.1).add(1);
+		if(hasUpgrade("u",14))ret=ret.mul(1.1).add(1);
 		if(ret.gte(90))ret=softcap(ret,90);
 		if(ret.gte(150))ret=softcap(ret,150,0);
 		if(hasUpgrade("u",11) && ret.lt(50))ret=ret.mul(0.96).add(2);
@@ -452,7 +499,7 @@ addLayer("mat", {
 	},
 	upgrades: {
         rows: 1,
-        cols: 3,
+        cols: 4,
 		11: {
             description(){
 				return window.chinesemode?"学分提升数学学习力。":"Credits boost math studying speed.";
@@ -503,6 +550,17 @@ addLayer("mat", {
 			},
 			currencyInternalName:"points"
         },
+		14: {
+            description(){
+				return window.chinesemode?"数学教材的效果变为原来的1.05次方。":"Effects of math textbooks ^1.05";
+			},
+            cost: new Decimal(1e52),
+            unlocked() { return player.gk.points.gte(150)}, // The upgrade is only visible when this is true
+			currencyDisplayName(){
+				return window.chinesemode?"学分":"Credits";
+			},
+			currencyInternalName:"points"
+        },
 	},
 	buyables: {
         rows: 2,
@@ -518,6 +576,7 @@ addLayer("mat", {
                 effect() {
 					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
+					if(hasUpgrade("mat",14))ret=ret.pow(1.05);
                     return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -548,7 +607,8 @@ addLayer("mat", {
                 effect() {
 					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
-                    return ret;
+                    if(hasUpgrade("mat",14))ret=ret.pow(1.05);
+					return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
                     let data = tmp[this.layer].buyables[this.id]
@@ -578,7 +638,8 @@ addLayer("mat", {
                 effect() {
 					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
-                    return ret;
+                    if(hasUpgrade("mat",14))ret=ret.pow(1.05);
+					return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
                     let data = tmp[this.layer].buyables[this.id]
@@ -587,6 +648,37 @@ addLayer("mat", {
                     (window.chinesemode?"<br>花费：":"<br>Cost: ")+format(data.cost)+(window.chinesemode?"学分":" Credits");
                 },
                 unlocked() { return player.gk.points.gte(100) }, 
+                canAfford() {
+                    return player.points.gte(tmp[this.layer].buyables[this.id].cost)},
+                buy() { 
+                    cost = tmp[this.layer].buyables[this.id].cost
+                    player.points = player.points.sub(cost)	
+                    player[this.layer].buyables[this.id] = player[this.layer].buyables[this.id].add(1)
+                },
+                buyMax() {}, // You'll have to handle this yourself if you want
+                style: {'height':'222px'},
+            },
+            22: {
+				title(){
+					return window.chinesemode?"数学必修四":"Math Textbook 4";
+				},
+                cost(x=player[this.layer].buyables[this.id]) { // cost for buying xth buyable, can be an object if there are multiple currencies
+                    let cost = Decimal.pow(20, x.pow(1.5)).mul(1e46)
+                    return cost
+                },
+                effect() {
+					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
+					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
+                    if(hasUpgrade("mat",14))ret=ret.pow(1.05);
+					return ret;
+                },
+                display() { // Everything else displayed in the buyable button after the title
+                    let data = tmp[this.layer].buyables[this.id]
+                    return (window.chinesemode?"等级：":"Level: ")+format(player[this.layer].buyables[this.id])+
+                    (window.chinesemode?"<br>提升数学学习力和获得的学分。当前：":"<br>Increase Math studying speed and credits gain. Currently: ")+format(data.effect)+"x"+
+                    (window.chinesemode?"<br>花费：":"<br>Cost: ")+format(data.cost)+(window.chinesemode?"学分":" Credits");
+                },
+                unlocked() { return player.gk.points.gte(150) }, 
                 canAfford() {
                     return player.points.gte(tmp[this.layer].buyables[this.id].cost)},
                 buy() { 
@@ -639,6 +731,7 @@ addLayer("eng", {
 		gain=gain.mul(buyableEffect("eng",11));
 		gain=gain.mul(buyableEffect("eng",12));
 		gain=gain.mul(buyableEffect("eng",21));
+		gain=gain.mul(buyableEffect("eng",22));
 		return gain;
 	},
 	getNextAt(){return new Decimal(0);},
@@ -829,6 +922,36 @@ addLayer("eng", {
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style: {'height':'222px'},
             },
+            22: {
+				title(){
+					return window.chinesemode?"英语必修四":"English Textbook 4";
+				},
+                cost(x=player[this.layer].buyables[this.id]) { // cost for buying xth buyable, can be an object if there are multiple currencies
+                    let cost = Decimal.pow(20, x.pow(1.5)).mul(1e50)
+                    return cost
+                },
+                effect() {
+					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
+					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
+                    return ret;
+                },
+                display() { // Everything else displayed in the buyable button after the title
+                    let data = tmp[this.layer].buyables[this.id]
+                    return (window.chinesemode?"等级：":"Level: ")+format(player[this.layer].buyables[this.id])+
+                    (window.chinesemode?"<br>提升英语学习力和获得的学分。当前：":"<br>Increase English studying speed and credits gain. Currently: ")+format(data.effect)+"x"+
+                    (window.chinesemode?"<br>花费：":"<br>Cost: ")+format(data.cost)+(window.chinesemode?"学分":" Credits");
+                },
+                unlocked() { return player.gk.points.gte(150) }, 
+                canAfford() {
+                    return player.points.gte(tmp[this.layer].buyables[this.id].cost)},
+                buy() { 
+                    cost = tmp[this.layer].buyables[this.id].cost
+                    player.points = player.points.sub(cost)	
+                    player[this.layer].buyables[this.id] = player[this.layer].buyables[this.id].add(1)
+                },
+                buyMax() {}, // You'll have to handle this yourself if you want
+                style: {'height':'222px'},
+            },
 	},
 	canReset(){return player.gk.points.gte(7)},
 	update(diff){
@@ -870,6 +993,7 @@ addLayer("is", {
 		gain=gain.mul(buyableEffect("is",11));
 		gain=gain.mul(buyableEffect("is",12));
 		gain=gain.mul(buyableEffect("is",21));
+		gain=gain.mul(buyableEffect("is",22));
 		return gain;
 	},
 	getNextAt(){return new Decimal(0);},
@@ -879,6 +1003,7 @@ addLayer("is", {
 		let ret=player.is.points.add(5).log10().mul(2).sub(1);
 		if(hasUpgrade("u",12))ret=ret.mul(1.1).add(1);
 		if(hasUpgrade("u",13))ret=ret.mul(1.1).add(1);
+		if(hasUpgrade("u",14))ret=ret.mul(1.1).add(1);
 		if(ret.gte(180))ret=softcap(ret,180);
 		if(ret.gte(300))ret=softcap(ret,300,0);
 		if(hasUpgrade("u",11) && ret.lt(50))ret=ret.mul(0.96).add(2);
@@ -1060,6 +1185,36 @@ addLayer("is", {
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style: {'height':'222px'},
             },
+            22: {
+				title(){
+					return window.chinesemode?"物理必修二":"Physics Textbook 2";
+				},
+                cost(x=player[this.layer].buyables[this.id]) { // cost for buying xth buyable, can be an object if there are multiple currencies
+                    let cost = Decimal.pow(20, x.pow(1.5)).mul(1e55)
+                    return cost
+                },
+                effect() {
+					let ret=Decimal.pow(1.25, player[this.layer].buyables[this.id]);
+					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
+                    return ret;
+                },
+                display() { // Everything else displayed in the buyable button after the title
+                    let data = tmp[this.layer].buyables[this.id]
+                    return (window.chinesemode?"等级：":"Level: ")+format(player[this.layer].buyables[this.id])+
+                    (window.chinesemode?"<br>提升理综学习力和获得的学分。当前：":"<br>Increase Integrated Science studying speed and credits gain. Currently: ")+format(data.effect)+"x"+
+                    (window.chinesemode?"<br>花费：":"<br>Cost: ")+format(data.cost)+(window.chinesemode?"学分":" Credits");
+                },
+                unlocked() { return player.gk.points.gte(150) }, 
+                canAfford() {
+                    return player.points.gte(tmp[this.layer].buyables[this.id].cost)},
+                buy() { 
+                    cost = tmp[this.layer].buyables[this.id].cost
+                    player.points = player.points.sub(cost)	
+                    player[this.layer].buyables[this.id] = player[this.layer].buyables[this.id].add(1)
+                },
+                buyMax() {}, // You'll have to handle this yourself if you want
+                style: {'height':'222px'},
+            },
 	},
 	canReset(){return player.gk.points.gte(25)},
 	update(diff){
@@ -1078,7 +1233,7 @@ addLayer("a", {
             return window.chinesemode?"成就":"Achievements"
         },
         achievements: {
-            rows: 3,
+            rows: 4,
             cols: 4,
             11: {
                 name(){return window.chinesemode?"开始必修课程了！":"I started my required course!"},
@@ -1139,11 +1294,11 @@ addLayer("a", {
                 name(){return window.chinesemode?"我可以上大学了！":"I can go to an university now!"},
                 done(){return player.gk.points.gte(200) },
                 tooltip(){return window.chinesemode?"使你的高考成绩达到200分。":"Have a total score of 200."},
-            },/*
+            },
             41: {
                 name(){return window.chinesemode?"教材爱好者":"Textbook Lover"},
-                done(){return false;player.is.buyables[21].gt(0) },
-                tooltip(){return window.chinesemode?"购买10本不同的教材。":"Buy 10 Different Textbooks."},
+                done(){return getTextbooks()>=15; },
+                tooltip(){return window.chinesemode?"购买15本不同的教材。":"Buy 15 Different Textbooks."},
             },
             42: {
                 name(){return window.chinesemode?"及格的一半":"1/2 of Pass"},
@@ -1152,14 +1307,14 @@ addLayer("a", {
             },
             43: {
                 name(){return window.chinesemode?"教材收集者":"Textbook Collector"},
-                done(){return false;player.is.buyables[21].gt(0) },
+                done(){return getTextbooks()>=20; },
                 tooltip(){return window.chinesemode?"购买20本不同的教材。":"Buy 20 Different Textbooks."},
             },
             44: {
                 name(){return window.chinesemode?"满分的一半":"Half of Perfect"},
                 done(){return player.gk.points.gte(375) },
                 tooltip(){return window.chinesemode?"使你的高考成绩达到375分。":"Have a total score of 375."},
-            },
+            },/*
             51: {
                 name(){return window.chinesemode?"教辅书爱好者":"Reference Book Lover"},
                 done(){return false;player.is.buyables[21].gt(0) },
@@ -1233,7 +1388,7 @@ addLayer("u", {
         },
 	upgrades: {
         rows: 1,
-        cols: 3,
+        cols: 4,
 		11: {
             description(){
 				return window.chinesemode?"蒙选择题。当你的单科考试成绩低于50时使它变得更好。":"For each subject, increase your score when score is lower than 50.";
@@ -1247,7 +1402,7 @@ addLayer("u", {
         },
 		12: {
             description(){
-				return window.chinesemode?"举一反三。你的考试成绩变得更好。":"Increase your exam score.";
+				return window.chinesemode?"仔细审题。你的考试成绩变得更好。":"Increase your exam score.";
 			},
             cost: new Decimal(1e16),
             unlocked() { return player.gk.points.gte(70)}, // The upgrade is only visible when this is true
@@ -1262,6 +1417,17 @@ addLayer("u", {
 			},
             cost: new Decimal(1e40),
             unlocked() { return player.gk.points.gte(125)}, // The upgrade is only visible when this is true
+			currencyDisplayName(){
+				return window.chinesemode?"学分":"Credits";
+			},
+			currencyInternalName:"points"
+        },
+		14: {
+            description(){
+				return window.chinesemode?"用草稿纸。你的理科考试成绩变得更好。":"Increase your math and integrated science exam score.";
+			},
+            cost: new Decimal(1e68),
+            unlocked() { return player.gk.points.gte(200)}, // The upgrade is only visible when this is true
 			currencyDisplayName(){
 				return window.chinesemode?"学分":"Credits";
 			},

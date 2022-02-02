@@ -81,8 +81,12 @@ layers.gk.milestones[14].requirementDescription="得到100分";
 layers.gk.milestones[14].effectDescription="解锁新教材。";
 layers.gk.milestones[15].requirementDescription="得到125分";
 layers.gk.milestones[15].effectDescription="提升基础学分获得。解锁新考试技巧。";
-layers.gk.milestones[16].requirementDescription="得到160分";
-layers.gk.milestones[16].effectDescription="当前残局";
+layers.gk.milestones[16].requirementDescription="得到150分";
+layers.gk.milestones[16].effectDescription="解锁新教材。";
+layers.gk.milestones[17].requirementDescription="得到200分";
+layers.gk.milestones[17].effectDescription="提升基础学分获得。解锁新考试技巧。";
+layers.gk.milestones[18].requirementDescription="得到255分";
+layers.gk.milestones[18].effectDescription="当前残局";
 
 /*
 
