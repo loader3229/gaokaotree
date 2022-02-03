@@ -12,7 +12,7 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "4",
+	num: "4.1",
 	name: "",
 }
 
@@ -68,6 +68,12 @@ function getPointMul() {
 	ret=ret.mul(buyableEffect("mat",22));
 	ret=ret.mul(buyableEffect("eng",22));
 	ret=ret.mul(buyableEffect("is",22));
+	ret=ret.mul(buyableEffect("chi",31));
+	ret=ret.mul(buyableEffect("mat",31));
+	ret=ret.mul(buyableEffect("eng",31));
+	ret=ret.mul(buyableEffect("is",31));
+	ret=ret.mul(buyableEffect("is",32));
+	ret=ret.mul(buyableEffect("is",41));
 	if(hasUpgrade("chi",13))ret=ret.mul(upgradeEffect("chi",13));
 	if(hasUpgrade("mat",13))ret=ret.mul(upgradeEffect("mat",13));
 	if(hasUpgrade("eng",14))ret=ret.mul(upgradeEffect("eng",14));
@@ -87,10 +93,20 @@ function getPointGenString(){
 
 function getTextbooks(){
 	let tblayers=["chi","mat","eng","is"];
-	let tbids=[11,12,21,22];
+	let tbids=[11,12,21,22,31,32,41];
 	let tb=0;
-	for(let i=0;i<=3;i++)for(let j=0;j<=3;j++)if(player[tblayers[i]].buyables[tbids[j]].gt(0))tb++;
+	for(let i=0;i<=3;i++)for(let j=0;j<=(i==3?6:4);j++)if(player[tblayers[i]].buyables[tbids[j]].gt(0))tb++;
 	return tb;
+}
+
+function autoBuyables(){
+	let tblayers=["chi","mat","eng","is"];
+	let tbids=[11,12,21,22,31,32,41];
+	let tb=0;
+	for(let i=0;i<=3;i++)for(let j=0;j<=(i==3?6:4);j++)if(layers[tblayers[i]].buyables[tbids[j]].unlocked() && layers[tblayers[i]].buyables[tbids[j]].canAfford()){
+		layers[tblayers[i]].buyables[tbids[j]].buy();
+		console.log(Date.now(),tblayers[i],tbids[j],"bought");
+	}
 }
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
@@ -104,7 +120,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.gk.points.gte(255);
+	return player.gk.points.gte(375);
 }
 
 
