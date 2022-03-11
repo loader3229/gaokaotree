@@ -46,8 +46,19 @@ layers.gk.effectDescription="";
 layers.gk.baseResource="学分";
 layers.gk.resetDescription="获得";
 
+layers.sm.symbol="超市";
+layers.sm.resource="零花钱";
+layers.sm.effectDescription="零花钱的获得基于你得到的分数";
+layers.sm.baseResource="分数";
+layers.sm.resetDescription="获得";
+
 layers.a.symbol="成就";
 layers.u.symbol="技巧";
+layers.un.symbol="大学";
+layers.un.resource="学位点";
+layers.un.effectDescription="学位点的获得基于你得到的分数";
+layers.un.baseResource="分数";
+layers.un.resetDescription="获得";
 
 layers.gk.milestones[0].requirementDescription="得到1分";
 layers.gk.milestones[0].effectDescription="学习语文可以获得学分。";
@@ -87,8 +98,14 @@ layers.gk.milestones[17].requirementDescription="得到200分";
 layers.gk.milestones[17].effectDescription="提升基础学分获得。解锁新考试技巧。";
 layers.gk.milestones[18].requirementDescription="得到250分";
 layers.gk.milestones[18].effectDescription="解锁新教材。";
-layers.gk.milestones[19].requirementDescription="得到375分";
-layers.gk.milestones[19].effectDescription="当前残局";
+layers.gk.milestones[19].requirementDescription="得到350分";
+layers.gk.milestones[19].effectDescription="解锁超市。";
+layers.gk.milestones[20].requirementDescription="得到420分";
+layers.gk.milestones[20].effectDescription="解锁超市里面新的一行。解锁新考试技巧。";
+layers.gk.milestones[21].requirementDescription="得到500分";
+layers.gk.milestones[21].effectDescription="提升基础学分获得。解锁超市里面新的一行。解锁大学。解锁新考试技巧。";
+layers.gk.milestones[22].requirementDescription="得到600分";
+layers.gk.milestones[22].effectDescription="提升基础学分获得。解锁新的学位。";
 
 /*
 

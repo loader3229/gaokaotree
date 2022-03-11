@@ -164,11 +164,32 @@
             effectDescription: "Unlock more textbooks."
         },
 		{
-			requirement: new Decimal(375),
-			requirementDescription: "Get 375 points",
+			requirement: new Decimal(350),
+			requirementDescription: "Get 350 points",
             unlocked() {return player[this.layer].best.gte(250)},
-            done() {return player[this.layer].best.gte(375)}, // Used to determine when to give the milestone
-            effectDescription: "Current Endgame"
+            done() {return player[this.layer].best.gte(350)}, // Used to determine when to give the milestone
+            effectDescription: "Unlock supermarket."
+        },
+		{
+			requirement: new Decimal(420),
+			requirementDescription: "Get 420 points",
+            unlocked() {return player[this.layer].best.gte(350)},
+            done() {return player[this.layer].best.gte(420)}, // Used to determine when to give the milestone
+            effectDescription: "Unlock a permanent upgrade. Unlock a new row of the supermarket."
+        },
+		{
+			requirement: new Decimal(500),
+			requirementDescription: "Get 500 points",
+            unlocked() {return player[this.layer].best.gte(420)},
+            done() {return player[this.layer].best.gte(500)}, // Used to determine when to give the milestone
+            effectDescription: "Unlock a permanent upgrade. Get more base credit from studying. Unlock University. Unlock a new row of the supermarket."
+        },
+		{
+			requirement: new Decimal(600),
+			requirementDescription: "Get 600 points",
+            unlocked() {return player[this.layer].best.gte(500)},
+            done() {return player[this.layer].best.gte(600)}, // Used to determine when to give the milestone
+            effectDescription: "Get more base credit from studying. Unlock a new row of degrees."
         },
 		],
     resetDescription: "Get ",
@@ -233,6 +254,8 @@ addLayer("chi", {
 		gain=gain.mul(buyableEffect("chi",21));
 		gain=gain.mul(buyableEffect("chi",22));
 		gain=gain.mul(buyableEffect("chi",31));
+		if(hasUpgrade("sm",13))gain=gain.mul(20);if(hasUpgrade("sm",21))gain=gain.mul(100);if(hasUpgrade("sm",22))gain=gain.mul(100);if(hasUpgrade("sm",32))gain=gain.mul(500);if(hasUpgrade("sm",33))gain=gain.mul(500);
+		if(hasUpgrade("un",21))gain=gain.mul(10000);
 		return gain;
 	},
 	getNextAt(){return new Decimal(0);},
@@ -242,6 +265,8 @@ addLayer("chi", {
 		let ret=player.chi.points.add(5).log10();
 		if(hasUpgrade("u",12))ret=ret.mul(1.1).add(1);
 		if(hasUpgrade("u",13))ret=ret.mul(1.1).add(1);
+		if(hasUpgrade("u",15))ret=ret.mul(1.1).add(1);
+		if(hasUpgrade("u",21))ret=ret.mul(1.1).add(1);
 		if(ret.gte(90))ret=softcap(ret,90);
 		if(ret.gte(150))ret=softcap(ret,150,0);
 		if(hasUpgrade("u",11) && ret.lt(50))ret=ret.mul(0.96).add(2);
@@ -271,7 +296,8 @@ addLayer("chi", {
 			effect() { // Calculate bonuses from the upgrade. Can return a single value or an object with multiple values
 				let base=2;
                 let ret = Decimal.pow(base,Decimal.log10(player.points.add(1)).pow(0.9)).mul(Decimal.div(4,Decimal.add(1,player.points.add(1).pow(-1).mul(3))));
-                return ret;
+                if(hasUpgrade("sm",11))ret=ret.pow(1.1);
+				return ret;
             },
             effectDisplay() { return format(this.effect())+"x" }, // Add formatting to the effect
 			currencyDisplayName(){
@@ -288,7 +314,8 @@ addLayer("chi", {
 			effect() { // Calculate bonuses from the upgrade. Can return a single value or an object with multiple values
 				let base=2;
                 let ret = Decimal.pow(base,Decimal.log10(player[this.layer].points.add(1)).pow(0.9));
-                return ret;
+                if(hasUpgrade("sm",11))ret=ret.pow(1.1);
+				return ret;
             },
             effectDisplay() { return format(this.effect())+"x" }, // Add formatting to the effect
 			currencyDisplayName(){
@@ -304,7 +331,8 @@ addLayer("chi", {
             unlocked() { return player.gk.points.gte(10)}, // The upgrade is only visible when this is true
 			effect() { // Calculate bonuses from the upgrade. Can return a single value or an object with multiple values
                 let ret = Decimal.log10(player[this.layer].points.add(10));
-                return ret;
+                if(hasUpgrade("sm",11))ret=ret.pow(1.1);
+				return ret;
             },
             effectDisplay() { return format(this.effect())+"x" }, // Add formatting to the effect
 			currencyDisplayName(){
@@ -338,7 +366,7 @@ addLayer("chi", {
                 effect() {
 					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
-					if(hasUpgrade("chi",14))ret=ret.pow(1.03);
+					if(hasUpgrade("chi",14))ret=ret.pow(1.03);if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
                     return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -369,7 +397,7 @@ addLayer("chi", {
                 effect() {
 					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
-					if(hasUpgrade("chi",14))ret=ret.pow(1.03);
+					if(hasUpgrade("chi",14))ret=ret.pow(1.03);if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
                     return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -400,7 +428,7 @@ addLayer("chi", {
                 effect() {
 					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
-					if(hasUpgrade("chi",14))ret=ret.pow(1.03);
+					if(hasUpgrade("chi",14))ret=ret.pow(1.03);if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
                     return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -431,7 +459,7 @@ addLayer("chi", {
                 effect() {
 					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
-					if(hasUpgrade("chi",14))ret=ret.pow(1.03);
+					if(hasUpgrade("chi",14))ret=ret.pow(1.03);if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
                     return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -462,7 +490,7 @@ addLayer("chi", {
                 effect() {
 					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
-					if(hasUpgrade("chi",14))ret=ret.pow(1.03);
+					if(hasUpgrade("chi",14))ret=ret.pow(1.03);if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
                     return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -525,6 +553,8 @@ addLayer("mat", {
 		gain=gain.mul(buyableEffect("mat",21));
 		gain=gain.mul(buyableEffect("mat",22));
 		gain=gain.mul(buyableEffect("mat",31));
+		if(hasUpgrade("sm",13))gain=gain.mul(20);if(hasUpgrade("sm",21))gain=gain.mul(100);if(hasUpgrade("sm",22))gain=gain.mul(100);if(hasUpgrade("sm",32))gain=gain.mul(500);if(hasUpgrade("sm",33))gain=gain.mul(500);
+		if(hasUpgrade("un",22))gain=gain.mul(10000);
 		return gain;
 	},
 	getNextAt(){return new Decimal(0);},
@@ -535,6 +565,7 @@ addLayer("mat", {
 		if(hasUpgrade("u",12))ret=ret.mul(1.1).add(1);
 		if(hasUpgrade("u",13))ret=ret.mul(1.1).add(1);
 		if(hasUpgrade("u",14))ret=ret.mul(1.1).add(1);
+		if(hasUpgrade("u",21))ret=ret.mul(1.1).add(1);
 		if(ret.gte(90))ret=softcap(ret,90);
 		if(ret.gte(150))ret=softcap(ret,150,0);
 		if(hasUpgrade("u",11) && ret.lt(50))ret=ret.mul(0.96).add(2);
@@ -564,6 +595,7 @@ addLayer("mat", {
 			effect() { // Calculate bonuses from the upgrade. Can return a single value or an object with multiple values
 				let base=2;
                 let ret = Decimal.pow(base,Decimal.log10(player.points.add(1)).pow(0.9));
+				if(hasUpgrade("sm",24))ret=ret.pow(1.1);
                 return ret;
             },
             effectDisplay() { return format(this.effect())+"x" }, // Add formatting to the effect
@@ -581,6 +613,7 @@ addLayer("mat", {
 			effect() { // Calculate bonuses from the upgrade. Can return a single value or an object with multiple values
 				let base=2;
                 let ret = Decimal.pow(base,Decimal.log10(player[this.layer].points.add(1)).pow(0.9));
+				if(hasUpgrade("sm",24))ret=ret.pow(1.1);
                 return ret;
             },
             effectDisplay() { return format(this.effect())+"x" }, // Add formatting to the effect
@@ -597,6 +630,7 @@ addLayer("mat", {
             unlocked() { return player.gk.points.gte(15)}, // The upgrade is only visible when this is true
 			effect() { // Calculate bonuses from the upgrade. Can return a single value or an object with multiple values
                 let ret = Decimal.log10(player[this.layer].points.add(10));
+				if(hasUpgrade("sm",24))ret=ret.pow(1.1);
                 return ret;
             },
             effectDisplay() { return format(this.effect())+"x" }, // Add formatting to the effect
@@ -631,7 +665,7 @@ addLayer("mat", {
                 effect() {
 					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
-					if(hasUpgrade("mat",14))ret=ret.pow(1.05);
+					if(hasUpgrade("mat",14))ret=ret.pow(1.05);if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
                     return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -662,7 +696,7 @@ addLayer("mat", {
                 effect() {
 					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
-                    if(hasUpgrade("mat",14))ret=ret.pow(1.05);
+                    if(hasUpgrade("mat",14))ret=ret.pow(1.05);if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
 					return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -693,7 +727,7 @@ addLayer("mat", {
                 effect() {
 					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
-                    if(hasUpgrade("mat",14))ret=ret.pow(1.05);
+                    if(hasUpgrade("mat",14))ret=ret.pow(1.05);if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
 					return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -724,7 +758,7 @@ addLayer("mat", {
                 effect() {
 					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
-                    if(hasUpgrade("mat",14))ret=ret.pow(1.05);
+                    if(hasUpgrade("mat",14))ret=ret.pow(1.05);if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
 					return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -755,7 +789,7 @@ addLayer("mat", {
                 effect() {
 					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
-                    if(hasUpgrade("mat",14))ret=ret.pow(1.05);
+                    if(hasUpgrade("mat",14))ret=ret.pow(1.05);if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
 					return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -819,6 +853,8 @@ addLayer("eng", {
 		gain=gain.mul(buyableEffect("eng",21));
 		gain=gain.mul(buyableEffect("eng",22));
 		gain=gain.mul(buyableEffect("eng",31));
+		if(hasUpgrade("sm",13))gain=gain.mul(20);if(hasUpgrade("sm",21))gain=gain.mul(100);if(hasUpgrade("sm",22))gain=gain.mul(100);if(hasUpgrade("sm",32))gain=gain.mul(500);if(hasUpgrade("sm",33))gain=gain.mul(500);
+		if(hasUpgrade("un",23))gain=gain.mul(10000);
 		return gain;
 	},
 	getNextAt(){return new Decimal(0);},
@@ -828,6 +864,8 @@ addLayer("eng", {
 		let ret=player.eng.points.add(5).log10();
 		if(hasUpgrade("u",12))ret=ret.mul(1.1).add(1);
 		if(hasUpgrade("u",13))ret=ret.mul(1.1).add(1);
+		if(hasUpgrade("u",15))ret=ret.mul(1.1).add(1);
+		if(hasUpgrade("u",21))ret=ret.mul(1.1).add(1);
 		if(ret.gte(90))ret=softcap(ret,90);
 		if(ret.gte(150))ret=softcap(ret,150,0);
 		if(hasUpgrade("u",11) && ret.lt(50))ret=ret.mul(0.96).add(2);
@@ -857,7 +895,8 @@ addLayer("eng", {
 			effect() { // Calculate bonuses from the upgrade. Can return a single value or an object with multiple values
 				let base=2;
                 let ret = Decimal.pow(base,Decimal.log10(player.points.add(1)).pow(0.9));
-                return ret;
+                if(hasUpgrade("sm",12))ret=ret.pow(1.1);
+				return ret;
             },
             effectDisplay() { return format(this.effect())+"x" }, // Add formatting to the effect
 			currencyDisplayName(){
@@ -874,7 +913,8 @@ addLayer("eng", {
 			effect() { // Calculate bonuses from the upgrade. Can return a single value or an object with multiple values
 				let base=2;
                 let ret = Decimal.pow(base,Decimal.log10(player[this.layer].points.add(1)).pow(0.9));
-                return ret;
+                if(hasUpgrade("sm",12))ret=ret.pow(1.1);
+				return ret;
             },
             effectDisplay() { return format(this.effect())+"x" }, // Add formatting to the effect
 			currencyDisplayName(){
@@ -891,7 +931,8 @@ addLayer("eng", {
 			effect() { // Calculate bonuses from the upgrade. Can return a single value or an object with multiple values
 				let base=1.5;
                 let ret = Decimal.pow(base,Decimal.log10(player.chi.points.add(1)).pow(0.9));
-                return ret;
+                if(hasUpgrade("sm",12))ret=ret.pow(1.1);
+				return ret;
             },
             effectDisplay() { return format(this.effect())+"x" }, // Add formatting to the effect
 			currencyDisplayName(){
@@ -930,6 +971,7 @@ addLayer("eng", {
                 effect() {
 					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
+					if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
                     return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -960,6 +1002,7 @@ addLayer("eng", {
                 effect() {
 					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
+					if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
                     return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -990,6 +1033,7 @@ addLayer("eng", {
                 effect() {
 					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
+					if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
                     return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -1020,6 +1064,7 @@ addLayer("eng", {
                 effect() {
 					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
+					if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
                     return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -1050,6 +1095,7 @@ addLayer("eng", {
                 effect() {
 					let ret=Decimal.pow(1.5, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
+					if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
                     return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -1114,6 +1160,8 @@ addLayer("is", {
 		gain=gain.mul(buyableEffect("is",31));
 		gain=gain.mul(buyableEffect("is",32));
 		gain=gain.mul(buyableEffect("is",41));
+		if(hasUpgrade("sm",13))gain=gain.mul(20);if(hasUpgrade("sm",21))gain=gain.mul(100);if(hasUpgrade("sm",22))gain=gain.mul(100);if(hasUpgrade("sm",32))gain=gain.mul(500);if(hasUpgrade("sm",33))gain=gain.mul(500);
+		if(hasUpgrade("un",31))gain=gain.mul(10000);if(hasUpgrade("un",32))gain=gain.mul(10000);if(hasUpgrade("un",33))gain=gain.mul(10000);
 		return gain;
 	},
 	getNextAt(){return new Decimal(0);},
@@ -1124,6 +1172,7 @@ addLayer("is", {
 		if(hasUpgrade("u",12))ret=ret.mul(1.1).add(1);
 		if(hasUpgrade("u",13))ret=ret.mul(1.1).add(1);
 		if(hasUpgrade("u",14))ret=ret.mul(1.1).add(1);
+		if(hasUpgrade("u",21))ret=ret.mul(1.1).add(1);
 		if(ret.gte(180))ret=softcap(ret,180);
 		if(ret.gte(300))ret=softcap(ret,300,0);
 		if(hasUpgrade("u",11) && ret.lt(50))ret=ret.mul(0.96).add(2);
@@ -1153,6 +1202,7 @@ addLayer("is", {
 			effect() { // Calculate bonuses from the upgrade. Can return a single value or an object with multiple values
 				let base=1.5;
                 let ret = Decimal.pow(base,Decimal.log10(player.points.add(1)).pow(0.9));
+				if(hasUpgrade("sm",23))ret=ret.pow(1.2);
                 return ret;
             },
             effectDisplay() { return format(this.effect())+"x" }, // Add formatting to the effect
@@ -1170,6 +1220,7 @@ addLayer("is", {
 			effect() { // Calculate bonuses from the upgrade. Can return a single value or an object with multiple values
 				let base=2;
                 let ret = Decimal.pow(base,Decimal.log10(player[this.layer].points.add(1)).pow(0.9));
+				if(hasUpgrade("sm",23))ret=ret.pow(1.2);
                 return ret;
             },
             effectDisplay() { return format(this.effect())+"x" }, // Add formatting to the effect
@@ -1187,6 +1238,7 @@ addLayer("is", {
 			effect() { // Calculate bonuses from the upgrade. Can return a single value or an object with multiple values
 				let base=1.5;
                 let ret = Decimal.pow(base,Decimal.log10(player.mat.points.add(1)).pow(0.9));
+				if(hasUpgrade("sm",23))ret=ret.pow(1.2);
                 return ret;
             },
             effectDisplay() { return format(this.effect())+"x" }, // Add formatting to the effect
@@ -1226,6 +1278,7 @@ addLayer("is", {
                 effect() {
 					let ret=Decimal.pow(1.25, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
+					if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
                     return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -1256,6 +1309,7 @@ addLayer("is", {
                 effect() {
 					let ret=Decimal.pow(1.25, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
+					if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
                     return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -1286,6 +1340,7 @@ addLayer("is", {
                 effect() {
 					let ret=Decimal.pow(1.25, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
+					if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
                     return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -1316,6 +1371,7 @@ addLayer("is", {
                 effect() {
 					let ret=Decimal.pow(1.25, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
+					if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
                     return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -1346,6 +1402,7 @@ addLayer("is", {
                 effect() {
 					let ret=Decimal.pow(1.25, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
+					if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
                     return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -1376,6 +1433,7 @@ addLayer("is", {
                 effect() {
 					let ret=Decimal.pow(1.25, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
+					if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
                     return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -1406,6 +1464,7 @@ addLayer("is", {
                 effect() {
 					let ret=Decimal.pow(1.25, player[this.layer].buyables[this.id]);
 					if(player.gk.points.gte(80))ret=ret.pow(player.gk.points.add(10).log10().pow(3).div(80).add(1));
+					if(hasUpgrade("sm",31))ret=ret.pow(1.01);if(hasUpgrade("sm",34))ret=ret.pow(1.01);
                     return ret;
                 },
                 display() { // Everything else displayed in the buyable button after the title
@@ -1443,7 +1502,7 @@ addLayer("a", {
             return window.chinesemode?"成就":"Achievements"
         },
         achievements: {
-            rows: 4,
+            rows: 6,
             cols: 4,
             11: {
                 name(){return window.chinesemode?"开始必修课程了！":"I started my required course!"},
@@ -1524,11 +1583,11 @@ addLayer("a", {
                 name(){return window.chinesemode?"满分的一半":"Half of Perfect"},
                 done(){return player.gk.points.gte(375) },
                 tooltip(){return window.chinesemode?"使你的高考成绩达到375分。":"Have a total score of 375."},
-            },/*
+            },
             51: {
-                name(){return window.chinesemode?"教辅书爱好者":"Reference Book Lover"},
-                done(){return false;player.is.buyables[21].gt(0) },
-                tooltip(){return window.chinesemode?"购买3本不同的教辅书。":"Buy 3 Different Reference Books."},
+                name(){return window.chinesemode?"商品爱好者":"Goods Lover"},
+                done(){return player.sm.upgrades.length>=4 },
+                tooltip(){return window.chinesemode?"在超市里购买4个不同的商品。":"Buy 4 goods in the supermarket."},
             },
             52: {
                 name(){return window.chinesemode?"我及格了！":"I Passed!"},
@@ -1536,15 +1595,35 @@ addLayer("a", {
                 tooltip(){return window.chinesemode?"使你的语文成绩达到90分。":"Have a Chinese score of 90."},
             },
             53: {
-                name(){return window.chinesemode?"教辅书收集者":"Reference Book Collector"},
-                done(){return false;player.is.buyables[21].gt(0) },
-                tooltip(){return window.chinesemode?"购买8本不同的教辅书。":"Buy 8 Different Reference Books."},
+                name(){return window.chinesemode?"商品收集者":"Goods Collector"},
+                done(){return player.sm.upgrades.length>=8 },
+                tooltip(){return window.chinesemode?"在超市里购买8个不同的商品。":"Buy 8 goods in the supermarket."},
             },
             54: {
                 name(){return window.chinesemode?"我可以上本科大学了！":"I can be an undergraduate student now!"},
                 done(){return player.gk.points.gte(500) },
                 tooltip(){return window.chinesemode?"使你的高考成绩达到500分。":"Have a total score of 500."},
             },
+            61: {
+                name(){return window.chinesemode?"我有学位了！":"I got a degree!"},
+                done(){return player.un.upgrades.length>=1 && !player.un.upgrades.includes(11) },
+                tooltip(){return window.chinesemode?"得到一个学位。":"Have a degree."},
+            },
+            62: {
+                name(){return window.chinesemode?"我修满了高中学分！":"Lots of credits"},
+                done(){return player.points.gte(1e144) },
+                tooltip(){return window.chinesemode?"得到1e144学分。":"Have 1e144 credits."},
+            },
+            63: {
+                name(){return window.chinesemode?"商品收集者II":"Goods Collector II"},
+                done(){return player.sm.upgrades.length>=12 },
+                tooltip(){return window.chinesemode?"在超市里购买12个不同的商品。":"Buy 12 goods in the supermarket."},
+            },
+            64: {
+                name(){return window.chinesemode?"我可以上一本大学了！":"I can be a better undergraduate student now!"},
+                done(){return player.gk.points.gte(600) },
+                tooltip(){return window.chinesemode?"使你的高考成绩达到600分。":"Have a total score of 600."},
+            },/*
             61: {
                 name(){return window.chinesemode?"我满分了！":"I got a perfect mark!"},
                 done(){return tmp.chi.points.gte(150) },
@@ -1597,8 +1676,8 @@ addLayer("u", {
             return window.chinesemode?"考试技巧":"Permanent Upgrades"
         },
 	upgrades: {
-        rows: 1,
-        cols: 4,
+        rows: 2,
+        cols: 5,
 		11: {
             description(){
 				return window.chinesemode?"蒙选择题。当你的单科考试成绩低于50时使它变得更好。":"For each subject, increase your score when score is lower than 50.";
@@ -1643,9 +1722,260 @@ addLayer("u", {
 			},
 			currencyInternalName:"points"
         },
+		15: {
+            description(){
+				return window.chinesemode?"多用素材。你的文科考试成绩变得更好。":"Increase your Chinese and English exam score.";
+			},
+            cost: new Decimal(1e110),
+            unlocked() { return player.gk.points.gte(420)}, // The upgrade is only visible when this is true
+			currencyDisplayName(){
+				return window.chinesemode?"学分":"Credits";
+			},
+			currencyInternalName:"points"
+        },
+		21: {
+            description(){
+				return window.chinesemode?"在试卷中提升知识面。你的考试成绩变得更好。":"Increase your exam score.";
+			},
+            cost: new Decimal(1e140),
+            unlocked() { return player.gk.points.gte(500)}, // The upgrade is only visible when this is true
+			currencyDisplayName(){
+				return window.chinesemode?"学分":"Credits";
+			},
+			currencyInternalName:"points"
+        },
 	},
 		tabFormat: [
 			"upgrades"
 		],
     }, 
+)
+
+
+addLayer("sm", {
+    name: "supermarket", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "SM", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: -1, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+    startData() { return {
+        unlocked: true,
+		points: new Decimal(0),
+    }},
+    color: "#cccc00",
+    requires(){
+		//if(player.m.points.gte(99))return new Decimal(Infinity);
+		return new Decimal(350);
+	},
+    resource: "cash", // Name of prestige currency
+    baseResource: "points", // Name of resource prestige is based on
+    baseAmount() {return player.gk.points}, // Get the current amount of baseResource
+    type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
+    row: 1, // Row the layer is in on the tree (0 is the first row)
+	base: new Decimal(1.5),
+    layerShown() {return player.gk.points.gte(350)}, 
+	resetsNothing(){return true},
+	autoPrestige(){return false},
+	getResetGain(){
+		let gain=softcap(Decimal.pow(10,softcap(player.gk.points,700).sub(350).div(100)).mul(0.01),100);
+		return gain;
+	},
+	getNextAt(){return new Decimal(0);},
+    resetDescription: "Get ",
+	doReset(){},
+	prestigeButtonText(){
+		return window.chinesemode?"向家长要"+format(tmp.sm.getResetGain)+"元零花钱":"Get "+format(tmp.sm.getResetGain)+" cash";
+	},
+	passiveGeneration(){
+		if(player.gk.points.lt(350))return 0;
+		return player.gk.points.pow(2).div(50000);
+	},
+	upgrades: {
+        rows: 3,
+        cols: 4,
+		11: {
+            description(){
+				return window.chinesemode?"购买语文阅读材料，前3个语文升级的效果提升为原来的1.1次方。":"Buy Chinese Reading Materials, power first 3 Chinese upgrades by ^1.1";
+			},
+            cost: new Decimal(20),
+        },
+		12: {
+            description(){
+				return window.chinesemode?"购买英语阅读材料，前3个英语升级的效果提升为原来的1.1次方。":"Buy English Reading Materials, power first 3 English upgrades by ^1.1";
+			},
+            cost: new Decimal(20),
+        },
+		13: {
+            description(){
+				return window.chinesemode?"购买知识小包，所有学科能力的获得提升二十倍。":"Buy Knowledge Pack, multiply abilities gain by 20.";
+			},
+            cost: new Decimal(25),
+        },
+		14: {
+            description(){
+				return window.chinesemode?"购买学习小包，自动学习速度提升三倍。":"Buy Learning Pack, multiply autostudy speed by 3.";
+			},
+            cost: new Decimal(30),
+        },
+		21: {
+            description(){
+				return window.chinesemode?"购买一套教辅书，所有学科能力的获得提升一百倍。":"Buy a bunch of reference books, multiply abilities gain by 100";
+			},
+            cost: new Decimal(288),
+			unlocked(){return player.gk.points.gte(420)},
+        },
+		22: {
+            description(){
+				return window.chinesemode?"购买另一套教辅书，所有学科能力的获得提升一百倍。":"Buy another bunch of reference books, multiply abilities gain by 100";
+			},
+            cost: new Decimal(388),
+			unlocked(){return player.gk.points.gte(420)},
+        },
+		23: {
+            description(){
+				return window.chinesemode?"购买理综知识大全，前3个理综升级的效果提升为原来的1.2次方。":"Power first 3 IS upgrades by ^1.2";
+			},
+            cost: new Decimal(168),
+			unlocked(){return player.gk.points.gte(420)},
+        },
+		24: {
+            description(){
+				return window.chinesemode?"购买数学公式大全，前3个数学升级的效果提升为原来的1.1次方。":"Buy Math Formula Pack, Power first 3 math upgrades by ^1.1";
+			},
+            cost: new Decimal(128),
+			unlocked(){return player.gk.points.gte(420)},
+        },
+		31: {
+            description(){
+				return window.chinesemode?"购买一位家教帮你解读教材，所有教材的效果提升为原来的1.01次方。":"Buy a family teacher, Power effects of all textbooks by ^1.01";
+			},
+            cost: new Decimal(1888),
+			unlocked(){return player.gk.points.gte(500)},
+        },
+		32: {
+            description(){
+				return window.chinesemode?"报名网课，所有学科能力的获得提升五百倍，且自动学习速度提升三倍。":"Multiply abilities gain by 500 and multiply autostudy speed by 3";
+			},
+            cost: new Decimal(3888),
+			unlocked(){return player.gk.points.gte(500)},
+        },
+		33: {
+            description(){
+				return window.chinesemode?"购买书店里所有的教辅书，所有学科能力的获得提升五百倍。":"Multiply abilities gain by 500";
+			},
+            cost: new Decimal(5888),
+			unlocked(){return player.gk.points.gte(500)},
+        },
+		34: {
+            description(){
+				return window.chinesemode?"购买另外一位家教帮你解读教材，所有教材的效果提升为原来的1.01次方。":"Buy another family teacher, Power effects of all textbooks by ^1.01";
+			},
+            cost: new Decimal(2888),
+			unlocked(){return player.gk.points.gte(500)},
+        },
+	},
+    },
+)
+
+
+addLayer("un", {
+    name: "university", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "UN", // This appears on the layer's node. Default is the id with the first letter capitalized
+    startData() { return {
+        unlocked: true,
+		points: new Decimal(0),
+		pointsTotal: new Decimal(0),
+    }},
+    color: "#888888",
+    row: 1,
+	position: 3,
+    layerShown() {return player.gk.points.gte(500)},
+    resource: "degree points", // Name of prestige currency
+    baseResource: "points", // Name of resource prestige is based on
+    baseAmount() {return player.gk.points}, // Get the current amount of baseResource
+	effect(){
+		if(player.gk.points.lt(100))return new Decimal(1);
+		return Decimal.pow(10,player.gk.points.sub(450).div(50).floor().pow(0.9));
+	},
+	upgrades: {
+        rows: 3,
+        cols: 4,
+		11: {
+            description(){
+				return window.chinesemode?"重置学位（将会重置你的学分和能力值）":"Reset degrees (resets credits and abilities)";
+			},
+            cost: new Decimal(0),
+            unlocked() { return player.gk.points.gte(500)}, // The upgrade is only visible when this is true
+			pay(){
+				player.chi.points=new Decimal(0);
+				player.chi.upgrades=[];
+				player.chi.buyables={11: new Decimal(0),12: new Decimal(0),21: new Decimal(0),22: new Decimal(0),31: new Decimal(0)};
+				player.mat.points=new Decimal(0);
+				player.mat.upgrades=[];
+				player.mat.buyables={11: new Decimal(0),12: new Decimal(0),21: new Decimal(0),22: new Decimal(0),31: new Decimal(0)};
+				player.eng.points=new Decimal(0);
+				player.eng.upgrades=[];
+				player.eng.buyables={11: new Decimal(0),12: new Decimal(0),21: new Decimal(0),22: new Decimal(0),31: new Decimal(0)};
+				player.is.points=new Decimal(0);
+				player.is.upgrades=[];
+				player.is.buyables={11: new Decimal(0),12: new Decimal(0),21: new Decimal(0),22: new Decimal(0),31: new Decimal(0),32: new Decimal(0),41: new Decimal(0)};
+				player.points=new Decimal(0);
+				player.un.upgrades=[];
+			}
+        },
+		21: {
+            description(){
+				return window.chinesemode?"得到语文专业学士学位，语文能力的获得提升一万倍":"Gain bachelor's degree for Chinese, 1e4x Chinese ability gain";
+			},
+            cost: new Decimal(1),
+            unlocked() { return player.gk.points.gte(500)}, // The upgrade is only visible when this is true
+        },
+		22: {
+            description(){
+				return window.chinesemode?"得到数学专业学士学位，数学能力的获得提升一万倍":"Gain bachelor's degree for Math, 1e4x Math ability gain";
+			},
+            cost: new Decimal(1),
+            unlocked() { return player.gk.points.gte(500)}, // The upgrade is only visible when this is true
+        },
+		23: {
+            description(){
+				return window.chinesemode?"得到英语专业学士学位，英语能力的获得提升一万倍":"Gain bachelor's degree for English, 1e4x English ability gain";
+			},
+            cost: new Decimal(1),
+            unlocked() { return player.gk.points.gte(500)}, // The upgrade is only visible when this is true
+        },
+		31: {
+            description(){
+				return window.chinesemode?"得到物理专业学士学位，理综能力的获得提升一万倍":"Gain bachelor's degree for Physics, 1e4x integrated science ability gain";
+			},
+            cost: new Decimal(1),
+            unlocked() { return player.gk.points.gte(600)}, // The upgrade is only visible when this is true
+        },
+		32: {
+            description(){
+				return window.chinesemode?"得到化学专业学士学位，理综能力的获得提升一万倍":"Gain bachelor's degree for Chemistry, 1e4x integrated science ability gain";
+			},
+            cost: new Decimal(1),
+            unlocked() { return player.gk.points.gte(600)}, // The upgrade is only visible when this is true
+        },
+		33: {
+            description(){
+				return window.chinesemode?"得到生物专业学士学位，理综能力的获得提升一万倍":"Gain bachelor's degree for Biology, 1e4x integrated science ability gain";
+			},
+            cost: new Decimal(1),
+            unlocked() { return player.gk.points.gte(600)}, // The upgrade is only visible when this is true
+        },
+	},
+	update(){
+		if(player.un.upgrades.includes(11))player.un.upgrades=[];
+		player.un.points=player.gk.points.sub(450).div(50).floor().sub(player.un.upgrades.length);
+		player.un.pointsTotal=player.gk.points.sub(450).div(50).floor();
+	},
+		tabFormat: [
+			"main-display",["display-text",function(){return (window.chinesemode?"总学位点：":"Total Degree Points: ")+formatWhole(player.un.pointsTotal)+
+			(window.chinesemode?"，你可以得到":"credits gain x")+formatWhole(tmp.un.effect)+
+			(window.chinesemode?"倍学分，下一个学位点在":", next at")+formatWhole(player.un.pointsTotal.mul(50).add(500))+
+			(window.chinesemode?"高考分数":" points")
+			}],
+			"upgrades"
+		],
+    },
 )

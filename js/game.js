@@ -70,6 +70,8 @@ function getNextAt(layer, canMax=false, useType = null) {
 	}}
 
 function softcap(value, cap, power = 0.5) {
+	cap=new Decimal(cap)
+	
 	if (value.lte(cap)) return value
 	else
 		return value.pow(power).times(cap.pow(decimalOne.sub(power)))
