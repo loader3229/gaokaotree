@@ -105,7 +105,11 @@ layers.gk.milestones[20].effectDescription="解锁超市里面新的一行。解
 layers.gk.milestones[21].requirementDescription="得到500分";
 layers.gk.milestones[21].effectDescription="提升基础学分获得。解锁超市里面新的一行。解锁大学。解锁新考试技巧。";
 layers.gk.milestones[22].requirementDescription="得到600分";
-layers.gk.milestones[22].effectDescription="提升基础学分获得。解锁新的学位。";
+layers.gk.milestones[22].effectDescription="提升基础学分获得。解锁超市里面新的一行。解锁新的学位。";
+layers.gk.milestones[23].requirementDescription="得到690分";
+layers.gk.milestones[23].effectDescription="提升基础学分获得。解锁新的学位。解锁新考试技巧。";
+layers.gk.milestones[24].requirementDescription="得到750分";
+layers.gk.milestones[24].effectDescription="当前残局";
 
 /*
 

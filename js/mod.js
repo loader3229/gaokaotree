@@ -12,7 +12,7 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "6",
+	num: "7.5",
 	name: "",
 }
 
@@ -44,6 +44,7 @@ function getPointGen() {
 }
 
 function getBasePointPow() {
+	if(player.gk.points.gte(690))return 5;
 	if(player.gk.points.gte(600))return 3;
 	if(player.gk.points.gte(500))return 2;
 	if(player.gk.points.gte(200))return 1.5;
@@ -89,6 +90,7 @@ function getAutoSpeed() {
 	if(player.gk.points.gte(15))ret = ret.mul(player.gk.points.pow(2).div(100).add(1));
 	if(hasUpgrade("sm",14))ret=ret.mul(3);
 	if(hasUpgrade("sm",32))ret=ret.mul(3);
+	if(hasUpgrade("sm",41))ret=ret.mul(5);
 	return ret;
 }
 
@@ -125,7 +127,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.gk.points.gte(600);
+	return player.gk.points.gte(750);
 }
 
 
